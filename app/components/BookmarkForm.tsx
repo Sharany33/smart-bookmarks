@@ -5,18 +5,18 @@ import { supabase } from "../lib/supabaseClient";
 
 export default function BookmarkForm({
   userId,
- 
+
 }: {
   userId: string;
-  
+
 }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const addBookmark = async () => {
-    if (!title || !url) return;
 
+  const addBookmark = async () => {
+    if (!title || !url || loading) return;
     setLoading(true);
 
     const { data, error } = await supabase
@@ -54,7 +54,7 @@ export default function BookmarkForm({
       <button
         onClick={addBookmark}
         disabled={loading}
-        className="px-4 py-2 bg-black text-white rounded"
+        className="px-4 py-2 bg-black text-white rounded disabled:opacity-50"
       >
         {loading ? "Adding..." : "Add Bookmark"}
       </button>

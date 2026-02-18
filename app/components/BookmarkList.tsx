@@ -1,6 +1,7 @@
 "use client";
 
 import { supabase } from "../lib/supabaseClient";
+import { useState } from "react";
 
 type Bookmark = {
   id: string;
@@ -10,12 +11,37 @@ type Bookmark = {
 
 export default function BookmarkList({
   bookmarks,
+  loading,
 }: {
   bookmarks: Bookmark[];
+  loading: boolean;
 }) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const deleteBookmark = async (id: string) => {
-    await supabase.from("bookmarks").delete().eq("id", id);
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this bookmark?"
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(id);
+
+    const { error } = await supabase
+      .from("bookmarks")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error(error);
+    }
+
+    setDeletingId(null);
   };
+
+  if (loading) {
+    return <p>Loading bookmarks...</p>;
+  }
 
   if (bookmarks.length === 0) {
     return <p>No bookmarks yet.</p>;

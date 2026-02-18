@@ -9,6 +9,8 @@ import BookmarkList from "./components/BookmarkList";
 export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
 
   /* ---------------- AUTH STATE ---------------- */
 
@@ -36,13 +38,20 @@ export default function Home() {
     if (!session) return;
 
     const fetchBookmarks = async () => {
-      const { data } = await supabase
+      setLoading(true);
+
+      const { data, error } = await supabase
         .from("bookmarks")
         .select("*")
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
+      if (error) {
+        console.error(error);
+      }
+
       setBookmarks(data || []);
+      setLoading(false);
     };
 
     fetchBookmarks();
@@ -104,7 +113,7 @@ export default function Home() {
       </button>
 
       <BookmarkForm userId={session.user.id} />
-      <BookmarkList bookmarks={bookmarks} />
+      <BookmarkList bookmarks={bookmarks} loading={loading} />
     </main>
   );
 }
