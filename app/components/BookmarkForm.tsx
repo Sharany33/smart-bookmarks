@@ -5,10 +5,10 @@ import { supabase } from "../lib/supabaseClient";
 
 export default function BookmarkForm({
   userId,
-  onAdd,
+ 
 }: {
   userId: string;
-  onAdd: (bookmark: any) => void;
+  
 }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
@@ -32,7 +32,6 @@ export default function BookmarkForm({
     setLoading(false);
 
     if (!error && data) {
-      onAdd(data); // 🔑 immediate UI update
       setTitle("");
       setUrl("");
     }

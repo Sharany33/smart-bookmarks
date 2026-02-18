@@ -10,20 +10,18 @@ export default function Home() {
   const [session, setSession] = useState<any>(null);
   const [bookmarks, setBookmarks] = useState<any[]>([]);
 
-  // 🔑 SINGLE SOURCE OF AUTH TRUTH
+  /* ---------------- AUTH STATE ---------------- */
+
   useEffect(() => {
-    // Initial session
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
     });
 
-    // Listen for login/logout
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
 
-      // Clear bookmarks immediately on logout
       if (!session) {
         setBookmarks([]);
       }
@@ -32,7 +30,8 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch bookmarks only when logged in
+  /* ---------------- INITIAL FETCH ---------------- */
+
   useEffect(() => {
     if (!session) return;
 
@@ -49,6 +48,41 @@ export default function Home() {
     fetchBookmarks();
   }, [session]);
 
+  /* ---------------- REALTIME SUBSCRIPTION ---------------- */
+
+  useEffect(() => {
+    if (!session) return;
+
+    const channel = supabase
+      .channel("bookmarks-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "bookmarks",
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setBookmarks((prev) => [payload.new, ...prev]);
+          }
+
+          if (payload.eventType === "DELETE") {
+            setBookmarks((prev) =>
+              prev.filter((b) => b.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session]);
+
+  /* ---------------- UI ---------------- */
+
   if (!session) {
     return (
       <main className="p-6">
@@ -62,7 +96,6 @@ export default function Home() {
     <main className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Smart Bookmarks</h1>
 
-      {/* LOGOUT — NOW INSTANT */}
       <button
         onClick={() => supabase.auth.signOut()}
         className="text-sm underline"
@@ -70,11 +103,7 @@ export default function Home() {
         Logout
       </button>
 
-      <BookmarkForm
-        userId={session.user.id}
-        onAdd={(b) => setBookmarks((prev) => [b, ...prev])}
-      />
-
+      <BookmarkForm userId={session.user.id} />
       <BookmarkList bookmarks={bookmarks} />
     </main>
   );
