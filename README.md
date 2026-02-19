@@ -35,7 +35,7 @@ I built this project as part of a technical assignment to understand authenticat
 
 ---
 
-## How Authentication Works (In Simple Terms)
+## How Authentication Works 
 
 1. User clicks **Login with Google**
 2. Google verifies the user
@@ -112,7 +112,8 @@ After logging out, the UI only updated after a refresh.
 
 ---
 
-## Project Structure (Simplified)
+## Project Structure 
+
 
 smart-bookmarks/
 ├─ app/
@@ -128,6 +129,7 @@ smart-bookmarks/
 ├─ package.json
 ├─ tailwind.config.js
 └─ postcss.config.js
+
 
 ---
 
