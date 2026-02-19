@@ -40,11 +40,11 @@ export default function BookmarkList({
   };
 
   if (loading) {
-    return <p>Loading bookmarks...</p>;
+    return <p className="text-sm text-gray-500">Loading bookmarks...</p>;
   }
 
   if (bookmarks.length === 0) {
-    return <p>No bookmarks yet.</p>;
+    return <p className="text-sm text-gray-500">No bookmarks yet. Add one above.</p>;
   }
 
   return (
@@ -52,7 +52,7 @@ export default function BookmarkList({
       {bookmarks.map((b) => (
         <li
           key={b.id}
-          className="border p-2 flex justify-between items-center"
+          className="flex justify-between items-center border rounded-md px-3 py-2 hover:bg-gray-50"
         >
           <a
             href={b.url}
@@ -65,9 +65,9 @@ export default function BookmarkList({
 
           <button
             onClick={() => deleteBookmark(b.id)}
-            className="text-sm text-red-600 underline"
+            className="text-sm text-red-500 hover:text-red-700"
           >
-            Delete
+            {deletingId === b.id ? "Deleting..." : "Delete"}
           </button>
         </li>
       ))}

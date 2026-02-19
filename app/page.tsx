@@ -94,26 +94,35 @@ export default function Home() {
 
   if (!session) {
     return (
-      <main className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Smart Bookmarks</h1>
-        <Auth />
+      <main className="min-h-screen bg-gray-50 flex justify-center py-10">
+        <div className="w-full max-w-xl bg-white p-6 rounded-lg shadow space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold">Smart Bookmarks</h1>
+          </div>
+
+          <Auth />
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Smart Bookmarks</h1>
+    <main className="min-h-screen bg-gray-100 flex justify-center py-12">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow p-6 space-y-6">
+        <div className="flex justify-between items-center border-b pb-3">
+          <h1 className="text-2xl font-semibold">Smart Bookmarks</h1>
 
-      <button
-        onClick={() => supabase.auth.signOut()}
-        className="text-sm underline"
-      >
-        Logout
-      </button>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="text-sm text-gray-500 hover:text-black"
+          >
+            Logout
+          </button>
+        </div>
 
-      <BookmarkForm userId={session.user.id} />
-      <BookmarkList bookmarks={bookmarks} loading={loading} />
+        <BookmarkForm userId={session.user.id} />
+        <BookmarkList bookmarks={bookmarks} loading={loading} />
+      </div>
     </main>
   );
 }
